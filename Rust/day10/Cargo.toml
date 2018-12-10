@@ -1,0 +1,11 @@
+[package]
+name = "day10"
+version = "0.1.0"
+authors = ["chmod222 <Lukas.Niederbremer@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+shared = { path = "../shared" }
+
+regex = "^1.1"
+lazy_static = "^1.2"
