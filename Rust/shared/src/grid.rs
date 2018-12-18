@@ -193,3 +193,20 @@ impl PartialOrd for Coord {
         Some(self.cmp(other))
     }
 }
+
+impl<T> Grid for Vec<Vec<T>> where T: GridTile {
+    type Coord = Coord;
+    type Tile = T;
+
+    fn bounds(&self) -> (Self::Coord, Self::Coord) {
+        if self.len() > 0 {
+            (Coord(0, 0), Coord(self.len(), self[0].len()))
+        } else {
+            (Coord(0, 0), Coord(0, 0))
+        }
+    }
+
+    fn tile_at(&self, coord: &Self::Coord) -> &Self::Tile {
+        &self[coord.0][coord.1]
+    }
+}
