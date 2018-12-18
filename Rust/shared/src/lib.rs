@@ -1,3 +1,5 @@
+#![feature(step_trait)]
+
 pub mod input {
     use std::io::{self, BufRead};
 
@@ -7,6 +9,8 @@ pub mod input {
         stdin.lock().lines().collect()
     }
 }
+
+pub mod grid;
 
 #[cfg(test)]
 mod tests {
