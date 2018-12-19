@@ -11,6 +11,7 @@ pub mod input {
 }
 
 pub mod grid;
+pub mod cpu;
 
 #[cfg(test)]
 mod tests {
