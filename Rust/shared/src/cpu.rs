@@ -1,5 +1,5 @@
 pub type Register = i8;
-pub type Word = i32;
+pub type Word = i64;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum Mnemonic {
