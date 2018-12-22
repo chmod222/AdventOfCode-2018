@@ -120,12 +120,30 @@ pub trait Grid {
     }
 }
 
+pub enum MovementCost {
+    Impassable,
+    Passable(isize)
+}
+
 pub trait NavigatableGrid: Grid {
-    fn is_passable_tile(&self, c: Self::Coord) -> bool;
+    fn movement_cost(&self, c1: &Self::Coord, c2: &Self::Coord) -> MovementCost;
+}
+
+pub trait NavigatableTile: GridTile {
+    fn movement_cost(&self, other: &Self) -> MovementCost;
+}
+
+impl<T> NavigatableGrid for T where T: Grid, T::Tile: NavigatableTile {
+    fn movement_cost(&self, c1: &Self::Coord, c2: &Self::Coord) -> MovementCost {
+        let t1 = self.tile_at(c1);
+        let t2 = self.tile_at(c2);
+
+        t1.movement_cost(t2)
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Hash)]
-pub struct Coord(pub usize, pub usize);
+pub struct Coord(pub isize, pub isize);
 
 pub struct CoordNeighbors {
     base: Coord,
@@ -150,7 +168,7 @@ impl Iterator for CoordNeighbors {
 }
 
 impl Coordinate for Coord {
-    type Component = usize;
+    type Component = isize;
     type NeighborIterator = CoordNeighbors;
 
     fn new(y: Self::Component, x: Self::Component) -> Self {
@@ -158,8 +176,7 @@ impl Coordinate for Coord {
     }
 
     fn distance(&self, other: &Self) -> Self::Component {
-        ((self.0 as isize - other.0 as isize).abs()
-            + (self.1 as isize - other.1 as isize).abs()) as usize
+        ((self.0 - other.0).abs() + (self.1 - other.1).abs())
     }
 
     fn neighbors(&self) -> CoordNeighbors {
@@ -173,7 +190,7 @@ impl Coordinate for Coord {
     fn y(&self) -> Self::Component { self.0 }
 
     fn numeric_limits() -> (Self::Component, Self::Component) {
-        (usize::min_value(), usize::max_value())
+        (isize::min_value(), isize::max_value())
     }
 
 }
@@ -200,13 +217,13 @@ impl<T> Grid for Vec<Vec<T>> where T: GridTile {
 
     fn bounds(&self) -> (Self::Coord, Self::Coord) {
         if self.len() > 0 {
-            (Coord(0, 0), Coord(self.len(), self[0].len()))
+            (Coord(0, 0), Coord(self.len() as _, self[0].len() as _))
         } else {
             (Coord(0, 0), Coord(0, 0))
         }
     }
 
     fn tile_at(&self, coord: &Self::Coord) -> &Self::Tile {
-        &self[coord.0][coord.1]
+        &self[coord.0 as usize][coord.1 as usize]
     }
 }
